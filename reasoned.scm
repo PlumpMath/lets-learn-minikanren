@@ -142,4 +142,17 @@
       (fresh (r)
         (caro x r)
         (unwrapo r out)))
-      (succeed (== x out)))))
+     (succeed (== x out)))))
+
+(define flatteno
+  (lambda (s out)
+    (conde
+     ((nullo s) (==`() out))
+     ((pairo s)
+      (fresh (a d res-a res-d)
+        (conso a d s)
+        (flatteno a res-a)
+        (flatteno d res-d)
+        (appendo res-a res-d out)))
+     (succeed (conso s `() out)))))
+
