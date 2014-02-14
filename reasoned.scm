@@ -156,3 +156,104 @@
         (appendo res-a res-d out)))
      (succeed (conso s `() out)))))
 
+(define flattenrev
+  (lambda (s out)
+    (conde
+     (succeed (conso s `() out))
+     ((nullo s) (==`() out))
+     ((pairo s)
+      (fresh (a d res-a res-d)
+        (conso a d s)
+        (flatteno a res-a)
+        (flatteno d res-d)
+        (appendo res-a res-d out))))))
+
+;; Real confused right now
+
+;; chapter 6
+(define anyo
+  (lambda (g)
+    (conde
+     (g succeed)
+     (succeed (anyo g)))))
+
+(define nevero (anyo fail))
+
+(define alwayso (anyo succeed))
+
+(define salo
+  (lambda (g)
+    (conde
+     (succeed succeed)
+     (succeed g))))
+
+;; chapter 7
+(define bit-xoro
+  (lambda (x y r)
+    (conde
+     ((== 0 x) (== 0 y) (== 0 r))
+     ((== 1 x) (== 0 y) (== 1 r))
+     ((== 0 x) (== 1 y) (== 1 r))
+     ((== 1 x) (== 1 y) (== 0 r))
+     (succeed fail))))
+
+;; (run* (s) (fresh (x y) (bit-xoro x y 0) (== s `(,x ,y))))
+;; (run* (s) (fresh (x y) (bit-xoro x y 1) (== s `(,x ,y))))
+
+(define bit-ando
+  (lambda (x y r)
+    (conde
+     ((== 0 x) (== 0 y) (== 0 r))
+     ((== 1 x) (== 0 y) (== 0 r))
+     ((== 0 x) (== 1 y) (== 0 r))
+     ((== 1 x) (== 1 y) (== 1 r))
+     (succeed fail))))
+
+
+;; don't know what and is, think prolly the second of these is the
+;; correct way to doit.
+
+;; (define half-addero
+;;   (lambda (x y r c)
+;;     (conde ((bit-xoro x y r)
+;;             (bit-ando x y c))
+;;            (succeed fail))))
+
+(define half-addero
+  (lambda (x y r c)
+    (fresh ()
+      (bit-xoro x y r)
+      (bit-ando x y c))))
+
+(define full-addero
+  (lambda (b x y r c)
+    (fresh (w xy wz)
+      (half-addero x y w xy)
+      (half-addero w b r wz)
+      (bit-xoro xy wz c))))
+
+(define build-num
+  (lambda (n)
+    (cond
+     ((zero? n) '())
+     ((odd? n) (cons 1 (build-num (/ (- n 1) 2))))
+     ((even? n) (cons 0 (build-num (/ n 2)))))))
+
+(define poso
+  (lambda (n)
+    (fresh (a d)
+      (== (cons a d) n))))
+
+(define >1o
+  (lambda (x)
+    (fresh (a ad dd)
+      (== `(,a ,ad . ,dd) x))))
+
+;; (define addero
+;;   (lambda (d n m r)
+;;     (conde
+;;      ((== 0 d) (== `() m) (== n r))
+;;      ((== 0 d) (== `() n) (== m r) (poso m))
+     
+;;      )
+;;     ))
